@@ -1,0 +1,182 @@
+<div id="comment" class="page">
+    <h2>Leave Your Comment</h2>
+    <!DOCTYPE html>
+    <html lang="ar">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>صفحة تعليقات</title>
+        <style>
+            .container {
+                width: 80%;
+                max-width: 600px;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h3 {
+                margin-top: 0;
+            }
+
+            #commentButton,
+            #shareButton {
+                background-color: #007BFF;
+                color: #fff;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+            #commentButton {
+                display: block;
+                margin: 0 auto 20px;
+                width: 100%;
+                max-width: 150px;
+            }
+
+            #shareButton {
+                margin-top: 10px;
+            }
+
+            .comment-section {
+                display: none;
+                margin-top: 20px;
+            }
+
+            textarea {
+                width: 100%;
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+                font-size: 14px;
+                resize: none;
+            }
+
+            .comment-list {
+                margin-top: 20px;
+            }
+
+            .comment-list ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .comment-list li {
+                background-color: #f8f9fa;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                position: relative;
+            }
+
+            .delete-button {
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                background-color: #dc3545;
+                color: #fff;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .delete-button:hover {
+                background-color: #c82333;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <button id="commentButton">Comment</button>
+
+            <div class="comment-section" id="commentSection">
+                <h3>اترك تعليق</h3>
+                <textarea id="commentText" rows="4" placeholder="اكتب تعليقك هنا..."></textarea><br>
+                <button id="shareButton">Share</button>
+            </div>
+
+            <div class="comment-list" id="commentList">
+                <h3>التعليقات:</h3>
+                <ul id="comments"></ul>
+            </div>
+        </div>
+
+        <script>
+            // Load comments from localStorage and display them
+            function loadComments() {
+                try {
+                    var comments = JSON.parse(localStorage.getItem('comments')) || [];
+                    var commentList = document.getElementById('comments');
+                    commentList.innerHTML = ''; // Clear current comments
+
+                    comments.forEach(function (comment, index) {
+                        var newComment = document.createElement('li');
+                        newComment.textContent = comment;
+
+                        // Add delete button
+                        var deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'حذف';
+                        deleteButton.className = 'delete-button';
+
+                        // Add delete event
+                        deleteButton.onclick = function () {
+                            deleteComment(index);
+                        };
+
+                        newComment.appendChild(deleteButton);
+                        commentList.appendChild(newComment);
+                    });
+                } catch (error) {
+                    console.error("Failed to load comments:", error);
+                }
+            }
+
+            // Save a new comment
+            document.getElementById('shareButton').onclick = function () {
+                var commentText = document.getElementById('commentText').value;
+                if (commentText.trim() !== "") {
+                    try {
+                        var comments = JSON.parse(localStorage.getItem('comments')) || [];
+                        comments.push(commentText);
+                        localStorage.setItem('comments', JSON.stringify(comments));
+                        loadComments(); // Refresh comments list
+                        document.getElementById('commentText').value = ''; // Clear text area
+                        document.getElementById('commentSection').style.display = 'none'; // Hide comment section
+                    } catch (error) {
+                        console.error("Failed to save comment:", error);
+                    }
+                }
+            };
+
+            // Delete a comment by index
+            function deleteComment(index) {
+                try {
+                    var comments = JSON.parse(localStorage.getItem('comments')) || [];
+                    comments.splice(index, 1);
+                    localStorage.setItem('comments', JSON.stringify(comments));
+                    loadComments(); // Refresh comments list
+                } catch (error) {
+                    console.error("Failed to delete comment:", error);
+                }
+            }
+
+            // Show the comment section when the "Comment" button is clicked
+            document.getElementById('commentButton').onclick = function () {
+                document.getElementById('commentSection').style.display = 'block';
+            };
+
+            // Load comments on page load
+            window.onload = loadComments;
+        </script>
+    </body>
+
+    </html>
+</div>
